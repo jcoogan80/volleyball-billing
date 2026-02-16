@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volleyball Club Billing System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div id="app" class="p-6 max-w-7xl mx-auto"></div>
+
+    <script>
+        const icons = {
+            users: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>',
+            dollar: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+            check: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>',
+            alert: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+            send: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>',
+            mail: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>',
+            calendar: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>',
+            download: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>',
+            upload: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>',
+            team: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>',
+            edit: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>',
+            trash: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>'
+        };
+
+        let state = {
+            teams: [],
+            players: [],
+            settings: { venmoUsername: '', zelleEmail: '' },
+            showSettings: false,
+            showTeamModal: false,
+            showPlayerModal: false,
+            editingTeam: null,
+            editingPlayer: null,
+            currentView: 'dashboard',
+            selectedDueDate: null
+        };
+
+        function loadData() {
+            try {
+                const savedTeams = localStorage.getItem('vb-teams');
+                const savedPlayers = localStorage.getItem('vb-players');
+                const savedSettings = localStorage.getItem('vb-settings');
+                
+                if (savedTeams) state.teams = JSON.parse(savedTeams);
+                if (savedPlayers) state.players = JSON.parse(savedPlayers);
+                if (savedSettings) state.settings = JSON.parse(savedSettings);
+            } catch (e) {
+                console.log('No saved data');
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('vb-teams', JSON.stringify(state.teams));
+            localStorage.setItem('vb-players', JSON.stringify(state.players));
+            localStorage.setItem('vb-settings', JSON.stringify(state.settings));
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify({ teams: state.teams, players: state.players, settings: state.settings }, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `volleyball-billing-backup-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (confirm('This will replace all current data. Continue?')) {
+                        state.teams = data.teams || [];
+                        state.players = data.players || [];
+                        state.settings = data.settings || { venmoUsername: '', zelleEmail: '' };
+                        saveData();
+                        render();
+                        alert('Data imported successfully!');
+                    }
+                } catch (error) {
+                    alert('Error importing file. Please make sure it is a valid backup file.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function openTeamModal(team = null) {
+            state.editingTeam = team ? {...team} : {
+                id: Date.now(),
+                name: '',
+                totalAmount: '',
+                scheduleType: 'specific',
+                dueDates: [''],
+                numPayments: 4,
+                startDate: new Date().toISOString().split('T')[0],
+                frequency: 'monthly'
+            };
+            state.showTeamModal = true;
+            render();
+        }
+
+        function saveTeam() {
+            const team = state.editingTeam;
+            if (!team.name || !team.totalAmount) {
+                alert('Please fill in team name and total amount');
+                return;
+            }
+
+            team.totalAmount = parseFloat(team.totalAmount);
+
+            if (team.scheduleType === 'auto') {
+                team.dueDates = [];
+                const start = new Date(team.startDate);
+                const num = parseInt(team.numPayments);
+                
+                for (let i = 0; i < num; i++) {
+                    const date = new Date(start);
+                    if (team.frequency === 'monthly') {
+                        date.setMonth(start.getMonth() + i);
+                    } else if (team.frequency === 'biweekly') {
+                        date.setDate(start.getDate() + (i * 14));
+                    } else if (team.frequency === 'weekly') {
+                        date.setDate(start.getDate() + (i * 7));
+                    }
+                    team.dueDates.push(date.toISOString().split('T')[0]);
+                }
+            } else {
+                team.dueDates = team.dueDates.filter(d => d);
+            }
+
+            team.paymentAmount = team.totalAmount / team.dueDates.length;
+
+            const existing = state.teams.findIndex(t => t.id === team.id);
+            if (existing >= 0) {
+                state.teams[existing] = team;
+            } else {
+                state.teams.push(team);
+            }
+
+            state.showTeamModal = false;
+            state.editingTeam = null;
+            saveData();
+            render();
+        }
+
+        function deleteTeam(teamId) {
+            if (confirm('Delete this team? Players on this team will need to be reassigned.')) {
+                state.teams = state.teams.filter(t => t.id !== teamId);
+                saveData();
+                render();
+            }
+        }
+
+        function addDueDate() {
+            state.editingTeam.dueDates.push('');
+            render();
+        }
+
+        function removeDueDate(index) {
+            state.editingTeam.dueDates.splice(index, 1);
+            render();
+        }
+
+        function openPlayerModal(player = null) {
+            state.editingPlayer = player ? {...player} : {
+                id: Date.now(),
+                name: '',
+                email: '',
+                teamId: state.teams.length > 0 ? state.teams[0].id : null,
+                customAmount: '',
+                useCustomAmount: false,
+                payments: {}
+            };
+            state.showPlayerModal = true;
+            render();
+        }
+
+        function savePlayer() {
+            const player = state.editingPlayer;
+            if (!player.name || !player.email || !player.teamId) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const team = state.teams.find(t => t.id === player.teamId);
+            if (!team) {
+                alert('Selected team not found');
+                return;
+            }
+
+            if (!player.payments || Object.keys(player.payments).length === 0) {
+                player.payments = {};
+                team.dueDates.forEach(date => {
+                    player.payments[date] = { status: 'unpaid', paidDate: null, lastReminder: null };
+                });
+            }
+
+            if (player.useCustomAmount) {
+                player.customAmount = parseFloat(player.customAmount);
+            }
+
+            const existing = state.players.findIndex(p => p.id === player.id);
+            if (existing >= 0) {
+                state.players[existing] = player;
+            } else {
+                state.players.push(player);
+            }
+
+            state.showPlayerModal = false;
+            state.editingPlayer = null;
+            saveData();
+            render();
+        }
+
+        function deletePlayer(playerId) {
+            if (confirm('Remove this player?')) {
+                state.players = state.players.filter(p => p.id !== playerId);
+                saveData();
+                render();
+            }
+        }
+
+        function togglePayment(playerId, dueDate) {
+            const player = state.players.find(p => p.id === playerId);
+            if (!player || !player.payments[dueDate]) return;
+
+            const payment = player.payments[dueDate];
+            payment.status = payment.status === 'paid' ? 'unpaid' : 'paid';
+            payment.paidDate = payment.status === 'paid' ? new Date().toISOString() : null;
+            
+            saveData();
+            render();
+        }
+
+        function sendReminderToPlayer(player, dueDate) {
+            const team = state.teams.find(t => t.id === player.teamId);
+            const amount = player.useCustomAmount ? player.customAmount : team.paymentAmount;
+            const formattedDate = new Date(dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            
+            const subject = `Payment Reminder - ${team.name} - Due ${formattedDate}`;
+            const body = `Hi ${player.name},
+
+This is a reminder that your volleyball club payment is due on ${formattedDate}.
+
+Team: ${team.name}
+Amount Due: $${amount.toFixed(2)}
+
+Please send payment via:
+${state.settings.venmoUsername ? `• Venmo: @${state.settings.venmoUsername}` : ''}
+${state.settings.zelleEmail ? `• Zelle: ${state.settings.zelleEmail}` : ''}
+
+Please include "${player.name} - ${team.name} - ${formattedDate}" in the payment note.
+
+Thank you!`;
+
+            window.open(`mailto:${player.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+            
+            player.payments[dueDate].lastReminder = new Date().toISOString();
+            saveData();
+            render();
+        }
+
+        function sendBulkReminders(dueDate) {
+            const unpaidPlayers = state.players.filter(p => 
+                p.payments[dueDate] && p.payments[dueDate].status === 'unpaid'
+            );
+            
+            if (unpaidPlayers.length === 0) {
+                alert('All players have paid for this date!');
+                return;
+            }
+
+            const formattedDate = new Date(dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            const emails = unpaidPlayers.map(p => p.email).join(',');
+            
+            const subject = `Payment Reminder - Due ${formattedDate}`;
+            const body = `Hi Team,
+
+This is a reminder that volleyball club payments are due on ${formattedDate}.
+
+Payment amounts:
+${unpaidPlayers.map(p => {
+    const team = state.teams.find(t => t.id === p.teamId);
+    const amount = p.useCustomAmount ? p.customAmount : team.paymentAmount;
+    return `${p.name} (${team.name}): $${amount.toFixed(2)}`;
+}).join('\n')}
+
+Please send payment via:
+${state.settings.venmoUsername ? `• Venmo: @${state.settings.venmoUsername}` : ''}
+${state.settings.zelleEmail ? `• Zelle: ${state.settings.zelleEmail}` : ''}
+
+Please include your name and team in the payment note.
+
+Thank you!`;
+
+            window.open(`mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+            
+            const now = new Date().toISOString();
+            unpaidPlayers.forEach(p => {
+                p.payments[dueDate].lastReminder = now;
+            });
+            saveData();
+            render();
+        }
+
+        function getUpcomingPayments() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const allDueDates = new Set();
+            state.teams.forEach(team => {
+                team.dueDates.forEach(date => allDueDates.add(date));
+            });
+            
+            return Array.from(allDueDates)
+                .map(date => new Date(date))
+                .filter(date => date >= today)
+                .sort((a, b) => a - b)
+                .slice(0, 5)
+                .map(date => date.toISOString().split('T')[0]);
+        }
+
+        function getStats() {
+            const allPayments = [];
+            state.players.forEach(player => {
+                const team = state.teams.find(t => t.id === player.teamId);
+                if (!team) return;
+                
+                Object.entries(player.payments || {}).forEach(([date, payment]) => {
+                    const amount = player.useCustomAmount ? player.customAmount : team.paymentAmount;
+                    allPayments.push({ ...payment, amount, date });
+                });
+            });
+
+            const paid = allPayments.filter(p => p.status === 'paid');
+            const unpaid = allPayments.filter(p => p.status === 'unpaid');
+            
+            return {
+                totalPlayers: state.players.length,
+                totalTeams: state.teams.length,
+                totalCollected: paid.reduce((sum, p) => sum + p.amount, 0),
+                totalOutstanding: unpaid.reduce((sum, p) => sum + p.amount, 0),
+                totalExpected: allPayments.reduce((sum, p) => sum + p.amount, 0),
+                paidCount: paid.length,
+                unpaidCount: unpaid.length
+            };
+        }
+
+        function renderDashboard() {
+            const stats = getStats();
+            const upcomingPayments = getUpcomingPayments();
+
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="bg-white rounded-lg p-4 shadow text-center">
+                            <div class="text-blue-600 mx-auto mb-2">${icons.team}</div>
+                            <div class="text-2xl font-bold text-gray-900">${stats.totalTeams}</div>
+                            <div class="text-sm text-gray-600">Teams</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow text-center">
+                            <div class="text-indigo-600 mx-auto mb-2">${icons.users}</div>
+                            <div class="text-2xl font-bold text-gray-900">${stats.totalPlayers}</div>
+                            <div class="text-sm text-gray-600">Players</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow text-center">
+                            <div class="text-green-600 mx-auto mb-2">${icons.dollar}</div>
+                            <div class="text-2xl font-bold text-gray-900">$${stats.totalCollected.toFixed(0)}</div>
+                            <div class="text-sm text-gray-600">Collected</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow text-center">
+                            <div class="text-red-600 mx-auto mb-2">${icons.dollar}</div>
+                            <div class="text-2xl font-bold text-gray-900">$${stats.totalOutstanding.toFixed(0)}</div>
+                            <div class="text-sm text-gray-600">Outstanding</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow text-center">
+                            <div class="text-purple-600 mx-auto mb-2">${icons.dollar}</div>
+                            <div class="text-2xl font-bold text-gray-900">$${stats.totalExpected.toFixed(0)}</div>
+                            <div class="text-sm text-gray-600">Total Expected</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            ${icons.calendar} Upcoming Payment Dates
+                        </h2>
+                        ${upcomingPayments.length === 0 ? `
+                            <p class="text-gray-500 text-center py-8">No upcoming payments scheduled</p>
+                        ` : `
+                            <div class="space-y-3">
+                                ${upcomingPayments.map(date => {
+                                    const playersForDate = state.players.filter(p => p.payments && p.payments[date]);
+                                    const unpaidForDate = playersForDate.filter(p => p.payments[date].status === 'unpaid');
+                                    const paidForDate = playersForDate.filter(p => p.payments[date].status === 'paid');
+                                    
+                                    return `
+                                        <div class="border rounded-lg p-4 hover:shadow-md transition">
+                                            <div class="flex flex-wrap justify-between items-center gap-2">
+                                                <div>
+                                                    <div class="font-bold text-lg text-gray-800">
+                                                        ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                                                    </div>
+                                                    <div class="text-sm text-gray-600 mt-1">
+                                                        ${paidForDate.length} paid • ${unpaidForDate.length} unpaid
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-2 flex-wrap">
+                                                    <button onclick="state.selectedDueDate = '${date}'; state.currentView = 'payments'; render();"
+                                                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+                                                        View Details
+                                                    </button>
+                                                    ${unpaidForDate.length > 0 ? `
+                                                        <button onclick="sendBulkReminders('${date}')"
+                                                            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-sm flex items-center gap-1">
+                                                            ${icons.send} Remind All
+                                                        </button>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTeams() {
+            return `
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-800">Teams</h2>
+                        <button onclick="openTeamModal()" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            + Add Team
+                        </button>
+                    </div>
+
+                    ${state.teams.length === 0 ? `
+                        <div class="bg-white rounded-lg shadow p-12 text-center text-gray-500">
+                            <div class="text-gray-400 mb-4">${icons.team}</div>
+                            <p>No teams yet. Create your first team to get started!</p>
+                        </div>
+                    ` : `
+                        <div class="grid md:grid-cols-2 gap-4">
+                            ${state.teams.map(team => {
+                                const playersOnTeam = state.players.filter(p => p.teamId === team.id);
+                                return `
+                                    <div class="bg-white rounded-lg shadow p-6">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-800">${team.name}</h3>
+                                                <p class="text-2xl font-bold text-indigo-600 mt-1">$${team.totalAmount.toFixed(2)}</p>
+                                                <p class="text-sm text-gray-600">Total Season Cost</p>
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <button onclick='openTeamModal(${JSON.stringify(team).replace(/'/g, "\\'")})'
+                                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded">
+                                                    ${icons.edit}
+                                                </button>
+                                                <button onclick="deleteTeam(${team.id})"
+                                                    class="p-2 text-red-600 hover:bg-red-50 rounded">
+                                                    ${icons.trash}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="space-y-2 text-sm">
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Players:</span>
+                                                <span class="font-semibold">${playersOnTeam.length}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-gray-600">Payments:</span>
+                                                <span class="font-semibold">${team.dueDates.length} × $${team.paymentAmount.toFixed(2)}</span>
+                                            </div>
+                                            <div class="mt-3 pt-3 border-t">
+                                                <p class="text-gray-600 font-medium mb-2">Payment Dates:</p>
+                                                <div class="space-y-1">
+                                                    ${team.dueDates.slice(0, 3).map(date => `
+                                                        <div class="text-gray-700">
+                                                            ${new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </div>
+                                                    `).join('')}
+                                                    ${team.dueDates.length > 3 ? `
+                                                        <div class="text-gray-500 text-xs">+ ${team.dueDates.length - 3} more</div>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderPlayers() {
+            return `
+                <div class="space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-800">Players</h2>
+                        <button onclick="openPlayerModal()" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                            ${state.teams.length === 0 ? 'disabled' : ''}>
+                            + Add Player
+                        </button>
+                    </div>
+
+                    ${state.teams.length === 0 ? `
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                            <p class="text-yellow-800">Please create at least one team before adding players.</p>
+                        </div>
+                    ` : state.players.length === 0 ? `
+                        <div class="bg-white rounded-lg shadow p-12 text-center text-gray-500">
+                            <div class="text-gray-400 mb-4">${icons.users}</div>
+                            <p>No players yet. Add your first player!</p>
+                        </div>
+                    ` : `
+                        <div class="bg-white rounded-lg shadow overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount/Payment</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payments</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${state.players.map(player => {
+                                        const team = state.teams.find(t => t.id === player.teamId);
+                                        if (!team) return '';
+                                        
+                                        const amount = player.useCustomAmount ? player.customAmount : team.paymentAmount;
+                                        const payments = Object.values(player.payments || {});
+                                        const paidCount = payments.filter(p => p.status === 'paid').length;
+                                        const totalCount = payments.length;
+                                        
+                                        return `
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4">
+                                                    <div class="font-medium text-gray-900">${player.name}</div>
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <span class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded text-xs font-medium">
+                                                        ${team.name}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-sm text-gray-600">${player.email}</td>
+                                                <td class="px-6 py-4">
+                                                    <div class="font-semibold text-gray-900">$${amount.toFixed(2)}</div>
+                                                    ${player.useCustomAmount ? '<div class="text-xs text-orange-600">Custom</div>' : ''}
+                                                </td>
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="flex-1 bg-gray-200 rounded-full h-2 min-w-[60px]">
+                                                            <div class="bg-green-500 h-2 rounded-full" style="width: ${(paidCount/totalCount*100)}%"></div>
+                                                        </div>
+                                                        <span class="text-sm text-gray-600 whitespace-nowrap">${paidCount}/${totalCount}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 text-right">
+                                                    <div class="flex justify-end gap-2">
+                                                        <button onclick='openPlayerModal(${JSON.stringify(player).replace(/'/g, "\\'")})'
+                                                            class="p-2 text-blue-600 hover:bg-blue-50 rounded">
+                                                            ${icons.edit}
+                                                        </button>
+                                                        <button onclick="deletePlayer(${player.id})"
+                                                            class="p-2 text-red-600 hover:bg-red-50 rounded">
+                                                            ${icons.trash}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        function renderPayments() {
+            const dueDate = state.selectedDueDate;
+            if (!dueDate) {
+                state.currentView = 'dashboard';
+                render();
+                return '';
+            }
+
+            const playersForDate = state.players.filter(p => p.payments && p.payments[dueDate]);
+            const unpaidPlayers = playersForDate.filter(p => p.payments[dueDate].status === 'unpaid');
+            const paidPlayers = playersForDate.filter(p => p.payments[dueDate].status === 'paid');
+
+            return `
+                <div class="space-y-6">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <button onclick="state.currentView = 'dashboard'; render();" 
+                                class="text-blue-600 hover:text-blue-700 mb-2">← Back to Dashboard</button>
+                            <h2 class="text-2xl font-bold text-gray-800">
+                                Payments Due: ${new Date(dueDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                            </h2>
+                        </div>
+                        ${unpaidPlayers.length > 0 ? `
+                            <button onclick="sendBulkReminders('${dueDate}')"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2">
+                                ${icons.send} Send Reminders (${unpaidPlayers.length})
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                            <div class="text-green-600 mb-2">${icons.check}</div>
+                            <div class="text-2xl font-bold text-green-900">${paidPlayers.length}</div>
+                            <div class="text-sm text-green-700">Paid</div>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-4 border border-red-200">
+                            <div class="text-red-600 mb-2">${icons.alert}</div>
+                            <div class="text-2xl font-bold text-red-900">${unpaidPlayers.length}</div>
+                            <div class="text-sm text-red-700">Unpaid</div>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <div class="text-blue-600 mb-2">${icons.dollar}</div>
+                            <div class="text-2xl font-bold text-blue-900">
+                                $${paidPlayers.reduce((sum, p) => {
+                                    const team = state.teams.find(t => t.id === p.teamId);
+                                    return sum + (p.useCustomAmount ? p.customAmount : team.paymentAmount);
+                                }, 0).toFixed(0)}
+                            </div>
+                            <div class="text-sm text-blue-700">Collected</div>
+                        </div>
+                    </div>
+
+                    ${unpaidPlayers.length > 0 ? `
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Unpaid (${unpaidPlayers.length})</h3>
+                            <div class="space-y-3">
+                                ${unpaidPlayers.map(player => {
+                                    const team = state.teams.find(t => t.id === player.teamId);
+                                    const amount = player.useCustomAmount ? player.customAmount : team.paymentAmount;
+                                    const payment = player.payments[dueDate];
+                                    
+                                    return `
+                                        <div class="border-2 border-red-200 bg-red-50 rounded-lg p-4">
+                                            <div class="flex flex-wrap justify-between items-center gap-3">
+                                                <div class="flex-1 min-w-[200px]">
+                                                    <div class="font-bold text-gray-900">${player.name}</div>
+                                                    <div class="text-sm text-gray-600">${team.name} • ${player.email}</div>
+                                                    <div class="text-lg font-semibold text-gray-900 mt-1">$${amount.toFixed(2)}</div>
+                                                    ${payment.lastReminder ? `
+                                                        <div class="text-xs text-gray-500 mt-1">
+                                                            Last reminded: ${new Date(payment.lastReminder).toLocaleDateString()}
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                                <div class="flex gap-2 flex-wrap">
+                                                    <button onclick="togglePayment(${player.id}, '${dueDate}')"
+                                                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition whitespace-nowrap">
+                                                        Mark Paid
+                                                    </button>
+                                                    <button onclick='sendReminderToPlayer(${JSON.stringify(player).replace(/'/g, "\\'")}, "${dueDate}")'
+                                                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition flex items-center gap-1 whitespace-nowrap">
+                                                        ${icons.mail} Remind
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${paidPlayers.length > 0 ? `
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Paid (${paidPlayers.length})</h3>
+                            <div class="space-y-3">
+                                ${paidPlayers.map(player => {
+                                    const team = state.teams.find(t => t.id === player.teamId);
+                                    const amount = player.useCustomAmount ? player.customAmount : team.paymentAmount;
+                                    const payment = player.payments[dueDate];
+                                    
+                                    return `
+                                        <div class="border-2 border-green-200 bg-green-50 rounded-lg p-4">
+                                            <div class="flex flex-wrap justify-between items-center gap-3">
+                                                <div class="flex-1 min-w-[200px]">
+                                                    <div class="font-bold text-gray-900 flex items-center gap-2 flex-wrap">
+                                                        ${player.name}
+                                                        <span class="text-green-600">${icons.check}</span>
+                                                    </div>
+                                                    <div class="text-sm text-gray-600">${team.name} • ${player.email}</div>
+                                                    <div class="text-lg font-semibold text-gray-900 mt-1">$${amount.toFixed(2)}</div>
+                                                    ${payment.paidDate ? `
+                                                        <div class="text-xs text-green-600 mt-1">
+                                                            Paid: ${new Date(payment.paidDate).toLocaleDateString()}
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                                <button onclick="togglePayment(${player.id}, '${dueDate}')"
+                                                    class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition whitespace-nowrap">
+                                                    Mark Unpaid
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function renderTeamModal() {
+            if (!state.showTeamModal) return '';
+            const team = state.editingTeam;
+
+            return `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target === this) { state.showTeamModal = false; render(); }">
+                    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">${team.name ? 'Edit Team' : 'Add New Team'}</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Team Name *</label>
+                                <input type="text" value="${team.name}" 
+                                    onchange="state.editingTeam.name = this.value"
+                                    placeholder="e.g., 14U Elite, 16U Regional"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Season Amount *</label>
+                                <input type="number" value="${team.totalAmount}" 
+                                    onchange="state.editingTeam.totalAmount = this.value"
+                                    placeholder="1200"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Schedule</label>
+                                <div class="space-y-3">
+                                    <label class="flex items-center gap-2">
+                                        <input type="radio" name="scheduleType" value="specific" 
+                                            ${team.scheduleType === 'specific' ? 'checked' : ''}
+                                            onchange="state.editingTeam.scheduleType = 'specific'; render()">
+                                        <span>Set specific dates (most flexible)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="radio" name="scheduleType" value="auto" 
+                                            ${team.scheduleType === 'auto' ? 'checked' : ''}
+                                            onchange="state.editingTeam.scheduleType = 'auto'; render()">
+                                        <span>Auto-generate dates</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            ${team.scheduleType === 'specific' ? `
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Dates</label>
+                                    <div class="space-y-2">
+                                        ${team.dueDates.map((date, index) => `
+                                            <div class="flex gap-2">
+                                                <input type="date" value="${date}"
+                                                    onchange="state.editingTeam.dueDates[${index}] = this.value"
+                                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                                <button onclick="removeDueDate(${index})"
+                                                    class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                                                    ${icons.trash}
+                                                </button>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                    <button onclick="addDueDate()"
+                                        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">
+                                        + Add Date
+                                    </button>
+                                </div>
+                            ` : `
+                                <div class="grid md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Number of Payments</label>
+                                        <input type="number" value="${team.numPayments}" min="1"
+                                            onchange="state.editingTeam.numPayments = this.value"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                        <input type="date" value="${team.startDate}"
+                                            onchange="state.editingTeam.startDate = this.value"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                                        <select value="${team.frequency}" 
+                                            onchange="state.editingTeam.frequency = this.value"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="biweekly">Bi-weekly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            `}
+
+                            ${team.totalAmount && (team.scheduleType === 'specific' ? team.dueDates.filter(d=>d).length : team.numPayments) ? `
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <p class="text-sm text-blue-800">
+                                        <strong>Payment per period:</strong> 
+                                        $${(parseFloat(team.totalAmount) / (team.scheduleType === 'specific' ? team.dueDates.filter(d=>d).length : parseInt(team.numPayments))).toFixed(2)}
+                                    </p>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="saveTeam()"
+                                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
+                                Save Team
+                            </button>
+                            <button onclick="state.showTeamModal = false; render();"
+                                class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPlayerModal() {
+            if (!state.showPlayerModal) return '';
+            const player = state.editingPlayer;
+
+            return `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target === this) { state.showPlayerModal = false; render(); }">
+                    <div class="bg-white rounded-lg shadow-xl max-w-xl w-full p-6" onclick="event.stopPropagation()">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">${player.name ? 'Edit Player' : 'Add New Player'}</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Player Name *</label>
+                                <input type="text" value="${player.name}" 
+                                    onchange="state.editingPlayer.name = this.value"
+                                    placeholder="Full name"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" value="${player.email}" 
+                                    onchange="state.editingPlayer.email = this.value"
+                                    placeholder="email@example.com"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Team *</label>
+                                <select value="${player.teamId}" 
+                                    onchange="state.editingPlayer.teamId = parseInt(this.value)"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    ${state.teams.map(team => `
+                                        <option value="${team.id}">${team.name} - $${team.paymentAmount.toFixed(2)}/payment</option>
+                                    `).join('')}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center gap-2">
+                                    <input type="checkbox" ${player.useCustomAmount ? 'checked' : ''}
+                                        onchange="state.editingPlayer.useCustomAmount = this.checked; render()">
+                                    <span class="text-sm font-medium text-gray-700">Use custom payment amount</span>
+                                </label>
+                                ${player.useCustomAmount ? `
+                                    <input type="number" value="${player.customAmount}" 
+                                        onchange="state.editingPlayer.customAmount = this.value"
+                                        placeholder="Custom amount per payment"
+                                        class="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        For mid-season joins or special arrangements
+                                    </p>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="savePlayer()"
+                                class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold">
+                                Save Player
+                            </button>
+                            <button onclick="state.showPlayerModal = false; render();"
+                                class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            
+            app.innerHTML = `
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
+                                <span class="text-indigo-600">${icons.users}</span>
+                                Volleyball Club Billing
+                            </h1>
+                            <p class="text-gray-600 mt-1">Custom Payment Schedules</p>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <button onclick="state.showSettings = !state.showSettings; render();" 
+                                class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                                ⚙️ Settings
+                            </button>
+                            <button onclick="exportData()" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-1">
+                                ${icons.download} Export
+                            </button>
+                            <label class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition cursor-pointer flex items-center gap-1">
+                                ${icons.upload} Import
+                                <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    ${state.showSettings ? `
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4 border-2 border-gray-200">
+                            <h3 class="font-semibold text-lg mb-3">Payment Settings</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Venmo Username</label>
+                                    <input type="text" value="${state.settings.venmoUsername}" 
+                                        onchange="state.settings.venmoUsername = this.value"
+                                        placeholder="@yourvenmo"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Zelle Email/Phone</label>
+                                    <input type="text" value="${state.settings.zelleEmail}"
+                                        onchange="state.settings.zelleEmail = this.value"
+                                        placeholder="your@email.com"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                            <button onclick="saveData(); alert('Settings saved!'); state.showSettings = false; render();" 
+                                class="mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                                Save Settings
+                            </button>
+                        </div>
+                    ` : ''}
+
+                    <div class="flex gap-2 border-b border-gray-200 overflow-x-auto">
+                        <button onclick="state.currentView = 'dashboard'; render();"
+                            class="px-4 py-2 font-medium transition whitespace-nowrap ${state.currentView === 'dashboard' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-800'}">
+                            Dashboard
+                        </button>
+                        <button onclick="state.currentView = 'teams'; render();"
+                            class="px-4 py-2 font-medium transition whitespace-nowrap ${state.currentView === 'teams' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-800'}">
+                            Teams
+                        </button>
+                        <button onclick="state.currentView = 'players'; render();"
+                            class="px-4 py-2 font-medium transition whitespace-nowrap ${state.currentView === 'players' ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-600 hover:text-gray-800'}">
+                            Players
+                        </button>
+                    </div>
+                </div>
+
+                <div class="fade-in">
+                    ${state.currentView === 'dashboard' ? renderDashboard() : ''}
+                    ${state.currentView === 'teams' ? renderTeams() : ''}
+                    ${state.currentView === 'players' ? renderPlayers() : ''}
+                    ${state.currentView === 'payments' ? renderPayments() : ''}
+                </div>
+
+                ${renderTeamModal()}
+                ${renderPlayerModal()}
+
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-blue-900 mb-2">📋 Quick Start Guide:</h3>
+                    <ol class="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                        <li>Go to <strong>Teams</strong> tab and create teams with total costs and payment schedules</li>
+                        <li>Go to <strong>Players</strong> tab and add players to their teams</li>
+                        <li>View <strong>Dashboard</strong> to see upcoming payments and send reminders</li>
+                        <li>Click on any due date to see details and mark payments as received</li>
+                        <li>Use <strong>Export</strong> regularly to backup your data!</li>
+                    </ol>
+                </div>
+            `;
+        }
+
+        loadData();
+        render();
+    </script>
+</body>
+</html>
